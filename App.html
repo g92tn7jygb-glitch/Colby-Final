@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Playlist Generator | Colby Bingham</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1a1a2e;
+      text-align: center;
+      padding: 50px 20px 30px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      color: #a78bfa;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: #aaa;
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* SECTION LABELS */
+    .label {
+      font-size: 0.78rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 14px;
+    }
+
+    /* MOOD BUTTONS */
+    .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .mood-btn {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+
+    .mood-btn .emoji {
+      display: block;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+
+    .mood-btn:hover {
+      border-color: #a78bfa;
+      background-color: #252525;
+    }
+
+    .mood-btn.selected {
+      border-color: #a78bfa;
+      background-color: #2a1f4a;
+      color: #a78bfa;
+    }
+
+    /* ENERGY SLIDER */
+    .energy-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .energy-row span {
+      font-size: 0.85rem;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #a78bfa;
+      cursor: pointer;
+    }
+
+    /* GENERATE BUTTON */
+    .generate-btn {
+      width: 100%;
+      padding: 16px;
+      background-color: #a78bfa;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 32px;
+      transition: background-color 0.2s;
+    }
+
+    .generate-btn:hover {
+      background-color: #8b6ef5;
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ERROR MESSAGE */
+    .error-box {
+      background-color: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: #f87171;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 40px 0;
+      display: none;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #333;
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    /* PLAYLIST */
+    .playlist {
+      display: none;
+    }
+
+    .playlist-header {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 10px 10px 0 0;
+      padding: 22px 24px;
+      border-bottom: 1px solid #333;
+    }
+
+    .playlist-header h3 {
+      color: #a78bfa;
+      font-size: 1.3rem;
+      margin-bottom: 6px;
+    }
+
+    .playlist-header p {
+      color: #888;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .track-list {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      overflow: hidden;
+    }
+
+    .track {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 24px;
+      border-bottom: 1px solid #2a2a2a;
+      transition: background-color 0.15s;
+    }
+
+    .track:last-child {
+      border-bottom: none;
+    }
+
+    .track:hover {
+      background-color: #252525;
+    }
+
+    .track-num {
+      color: #555;
+      font-size: 0.82rem;
+      width: 18px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .track-info {
+      flex: 1;
+    }
+
+    .track-title {
+      font-weight: bold;
+      font-size: 0.95rem;
+      color: #f0f0f0;
+    }
+
+    .track-artist {
+      color: #888;
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .track-vibe {
+      font-size: 0.75rem;
+      color: #a78bfa;
+      background-color: rgba(167, 139, 250, 0.1);
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* RESET BUTTON */
+    .reset-btn {
+      width: 100%;
+      padding: 13px;
+      background-color: transparent;
+      border: 1px solid #a78bfa;
+      border-radius: 10px;
+      color: #a78bfa;
+      font-family: Arial, sans-serif;
+      font-size: 0.88rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 14px;
+      display: none;
+      transition: background-color 0.2s;
+    }
+
+    .reset-btn:hover {
+      background-color: rgba(167, 139, 250, 0.1);
+    }
+
+    /* BACK LINKS */
+    .back-links {
+      text-align: center;
+      padding: 40px 0 20px;
+    }
+
+    .back-links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin: 0 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .back-links a:hover {
+      color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🎵 Mood Playlist Generator</h1>
+    <p>Pick your mood, set your energy level, and I'll build you the perfect playlist.</p>
+  </header>
+
+  <div class="container">
+
+    <!-- MOOD SELECTION -->
+    <div class="label">How are you feeling?</div>
+    <div class="mood-grid">
+      <button class="mood-btn" data-mood="Happy">
+        <span class="emoji">😄</span>Happy
+      </button>
+      <button class="mood-btn" data-mood="Sad">
+        <span class="emoji">😢</span>Sad
+      </button>
+      <button class="mood-btn" data-mood="Hype">
+        <span class="emoji">🔥</span>Hype
+      </button>
+      <button class="mood-btn" data-mood="Chill">
+        <span class="emoji">😌</span>Chill
+      </button>
+      <button class="mood-btn" data-mood="Romantic">
+        <span class="emoji">💕</span>Romantic
+      </button>
+      <button class="mood-btn" data-mood="Focused">
+        <span class="emoji">🎯</span>Focused
+      </button>
+      <button class="mood-btn" data-mood="Nostalgic">
+        <span class="emoji">🌅</span>Nostalgic
+      </button>
+      <button class="mood-btn" data-mood="Angry">
+        <span class="emoji">😤</span>Angry
+      </button>
+      <button class="mood-btn" data-mood="Heartbroken">
+        <span class="emoji">💔</span>Heartbroken
+      </button>
+      <button class="mood-btn" data-mood="Adventurous">
+        <span class="emoji">🌍</span>Adventurous
+      </button>
+      <button class="mood-btn" data-mood="Anxious">
+        <span class="emoji">😰</span>Anxious
+      </button>
+      <button class="mood-btn" data-mood="Empowered">
+        <span class="emoji">💪</span>Empowered
+      </button>
+    </div>
+
+    <!-- ENERGY SLIDER -->
+    <div class="label">Energy Level</div>
+    <div class="energy-row">
+      <span>😴 Low</span>
+      <input type="range" id="energySlider" min="1" max="10" value="5">
+      <span>⚡ High</span>
+    </div>
+
+    <!-- ERROR BOX -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- GENERATE BUTTON -->
+    <button class="generate-btn" id="generateBtn" onclick="generatePlaylist()">
+      ✦ Generate My Playlist
+    </button>
+
+    <!-- LOADING SPINNER -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Building your playlist...</p>
+    </div>
+
+    <!-- PLAYLIST RESULT -->
+    <div class="playlist" id="playlistOutput">
+      <div class="playlist-header">
+        <h3 id="playlistName"></h3>
+        <p id="playlistDesc"></p>
+      </div>
+      <div class="track-list" id="trackList"></div>
+    </div>
+
+    <!-- RESET BUTTON -->
+    <button class="reset-btn" id="resetBtn" onclick="resetPlaylist()">
+      ↺ Generate Another Playlist
+    </button>
+
+    <!-- BACK LINKS -->
+    <div class="back-links">
+      <a href="scratch.html">← Brazil Page</a>
+      <a href="index.html">Professional Site</a>
+    </div>
+
+  </div>
+
+  <script>
+    // Keep track of which mood is selected
+    let selectedMood = null;
+
+    // When a mood button is clicked, highlight it and save the mood
+    document.querySelectorAll('.mood-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        // Remove selected from all buttons
+        document.querySelectorAll('.mood-btn').forEach(function(b) {
+          b.classList.remove('selected');
+        });
+        // Add selected to the one clicked
+        btn.classList.add('selected');
+        selectedMood = btn.dataset.mood;
+      });
+    });
+
+    async function generatePlaylist() {
+      // Make sure a mood is picked
+      if (!selectedMood) {
+        showError('Please select a mood first!');
+        return;
+      }
+
+      // Get the energy level from the slider
+      var energy = document.getElementById('energySlider').value;
+      var energyLabel = energy <= 3 ? 'very low energy' : energy <= 6 ? 'moderate energy' : 'high energy';
+
+      // Clear any old errors and show loading
+      hideError();
+      showLoading(true);
+      document.getElementById('generateBtn').disabled = true;
+      document.getElementById('playlistOutput').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+
+      // Build the prompt we send to Claude
+      var prompt = 'You are a music curator. Create a playlist of 10 English songs for someone feeling "' + selectedMood + '" with ' + energyLabel + ' (energy level ' + energy + '/10).\n\nReturn ONLY a valid JSON object with no extra text, no markdown, no backticks:\n{\n  "playlistName": "Creative playlist title",\n  "description": "1-2 sentence vibe description",\n  "tracks": [\n    { "title": "Song Title", "artist": "Artist Name", "vibe": "short 2-3 word tag" }\n  ]\n}\n\nRules:\n- All songs must be in English\n- Use real well-known songs\n- Match the mood and energy carefully\n- Make exactly 10 tracks';
+
+      try {
+        // Call the Claude API
+        var response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [
+              { role: 'user', content: prompt }
+            ]
+          })
+        });
+
+        var data = await response.json();
+
+        // Pull the text out of the response
+        var text = data.content.map(function(item) {
+          return item.text || '';
+        }).join('');
+
+        // Remove any accidental markdown code fences
+        var clean = text.replace(/```json|```/g, '').trim();
+
+        // Parse the JSON
+        var parsed = JSON.parse(clean);
+
+        // Show the playlist
+        renderPlaylist(parsed);
+
+      } catch (err) {
+        showError('Something went wrong. Please try again!');
+        console.error(err);
+      } finally {
+        showLoading(false);
+        document.getElementById('generateBtn').disabled = false;
+      }
+    }
+
+    function renderPlaylist(data) {
+      // Set the playlist name and description
+      document.getElementById('playlistName').textContent = data.playlistName;
+      document.getElementById('playlistDesc').textContent = data.description;
+
+      // Build the track list
+      var trackList = document.getElementById('trackList');
+      trackList.innerHTML = '';
+
+      data.tracks.forEach(function(track, index) {
+        var div = document.createElement('div');
+        div.className = 'track';
+        div.innerHTML =
+          '<div class="track-num">' + (index + 1) + '</div>' +
+          '<div class="track-info">' +
+            '<div class="track-title">' + track.title + '</div>' +
+            '<div class="track-artist">' + track.artist + '</div>' +
+          '</div>' +
+          '<div class="track-vibe">' + track.vibe + '</div>';
+        trackList.appendChild(div);
+      });
+
+      // Show the playlist and reset button
+      document.getElementById('playlistOutput').style.display = 'block';
+      document.getElementById('resetBtn').style.display = 'block';
+
+      // Scroll down to the playlist
+      document.getElementById('playlistOutput').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetPlaylist() {
+      // Hide playlist and reset button
+      document.getElementById('playlistOutput').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+
+      // Clear mood selection
+      document.querySelectorAll('.mood-btn').forEach(function(b) {
+        b.classList.remove('selected');
+      });
+      selectedMood = null;
+
+      // Reset slider
+      document.getElementById('energySlider').value = 5;
+
+      // Scroll back to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    function showError(msg) {
+      var el = document.getElementById('errorBox');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    function hideError() {
+      document.getElementById('errorBox').style.display = 'none';
+    }
+  </script>
+
+</body>
+</html>

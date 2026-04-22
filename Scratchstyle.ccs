@@ -1,0 +1,191 @@
+/* ================================
+   Scratchstyle.css
+   Brazil Page — Colby Bingham
+================================ */
+
+/* BODY */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f7f0;
+  color: #222;
+  margin: 0;
+  padding: 0;
+}
+
+/* NAVIGATION */
+#top-nav {
+  background-color: #003580;
+  padding: 14px 20px;
+  text-align: center;
+}
+
+#top-nav a {
+  color: #ffdf00;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 0 14px;
+}
+
+#top-nav a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* HERO / HEADER */
+#hero {
+  background-color: #009c3b;
+  color: white;
+  text-align: center;
+  padding: 70px 20px 50px;
+}
+
+#hero h1 {
+  font-size: 3.5rem;
+  color: #ffdf00;
+  font-family: Georgia, serif;
+  margin-bottom: 10px;
+}
+
+#hero p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* MAIN CONTENT AREA */
+#main-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 24px 80px;
+}
+
+/* SECTION HEADINGS */
+h2 {
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  color: #009c3b;
+  border-bottom: 3px solid #ffdf00;
+  padding-bottom: 8px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+/* PARAGRAPHS */
+p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 16px;
+}
+
+/* IMAGES */
+.brazil-img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border: 4px solid #ffdf00;
+  margin: 20px 0 8px;
+  display: block;
+}
+
+.img-caption {
+  font-size: 0.85rem;
+  color: #888;
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+
+/* LISTS */
+ol {
+  color: #333;
+  line-height: 1.9;
+  padding-left: 22px;
+}
+
+ol li {
+  margin-bottom: 10px;
+  font-size: 0.97rem;
+}
+
+ul.inner-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #555;
+  font-size: 0.93rem;
+  margin-top: 6px;
+}
+
+ul.inner-list li {
+  margin-bottom: 4px;
+}
+
+/* VIDEO */
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border: 4px solid #009c3b;
+  margin: 20px 0 8px;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* FACT CARDS */
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.fact-card {
+  background-color: white;
+  border-left: 5px solid #009c3b;
+  padding: 16px 20px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.07);
+}
+
+.fact-card h4 {
+  color: #003580;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.fact-card p {
+  font-size: 0.88rem;
+  margin: 0;
+  color: #555;
+}
+
+/* FOOTER */
+#page-footer {
+  background-color: #009c3b;
+  color: white;
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 0.9rem;
+}
+
+#page-footer a {
+  color: #ffdf00;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#page-footer a:hover {
+  text-decoration: underline;
+}
